@@ -1,0 +1,90 @@
+/*
+Tło strony
+*/
+body {
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #333;
+	width: 1000px;
+}
+
+/*
+Szare zaokrąglone tło, które można wystylizować np. na stół
+*/
+#board {
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	background-color: #777;
+	width: 600px;
+	height: 650px;
+	border-radius: 45px;
+}
+
+/*
+Div w którym jest czasomierz i liczba porównań
+*/
+#informationBox {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/*
+Czasomierz
+*/
+#time {
+	color: #fff;
+	font-size: 24px;
+	text-align: center;
+}
+
+/*
+Napis liczby porównań
+*/
+#comparisons {
+	position: relative;
+	color: #fff;
+	font-size: 24px;
+	text-align: center;
+}
+
+/*
+Div w którym jest guzik gry ponownej
+*/
+#playAgain {
+	margin-top: 30px;
+}
+
+/*
+Guzik gry ponownej
+*/
+#playAgainButton {
+	background-color: #eee;
+	border: none;
+	border-radius: 100px;
+	color: #77b103;
+	text-align: center;
+	font-size: 16px;
+}
+
+/*
+Siatka kafelków
+*/
+#grid {
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	top: 30px;
+	width: 500px;
+	height: 500px;
+}
+
+/*
+Pojedynczy kafelek
+*/
+#grid > div {
+	height: 80px;
+	float: left;
+	margin-top: 35px;
+	width: 80px;
+}
