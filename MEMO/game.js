@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const button = document.getElementById('playAgainButton');
 	const time = document.getElementById('time');
 	const comparisons = document.getElementById('comparisons');
+	// Licznik porównań
 	var counter = 0;
 	// Zmienna przechowująca liczby par
 	var width = 10;
@@ -26,26 +27,32 @@ document.addEventListener('DOMContentLoaded', () => {
 	time.innerHTML = 'Czas: 0:00';
 	comparisons.innerHTML = 'Liczba porównań: ' + counter;
 	
+	// Funkcja wyświetlająca zawartość kafelka po kliknięciu
 	function showTile(e) {
+			// Sprawdzamy czy to pierwsze kliknięcie w grze, jeżeli tak to zegar startuje
 			if (isFirstClick) {
-				isFirstClick = false;
-				startTimer();
+					isFirstClick = false;
+					startTimer();
 			}
+			// Można pokazać co najwyżej dwa kafelki jednocześnie
 			if (choosenTiles.length < 2) {
+				// Pobranie identyfikatora kafelka
 				var tmp = parseInt(e.target.getAttribute('id'));
+				// Przypisanie liczby do div'a za pomocą innerHTML
 				tiles[tmp].innerHTML = tilesNums[tmp];
-				if ((tmp+1)%5==0) tiles[tmp].setAttribute('style', `background-color: white;
-																	display: flex; 
-																	align-items: center;
-																	justify-content: center;
-																	font-size: 24px;`);
-				else tiles[tmp].setAttribute('style', `background-color: white;
-													   display: flex; 
-													   align-items: center;
-													   justify-content: center;
-													   margin-right: 25px;
-													   font-size: 24px;`);
-				choosenTiles.push(tiles[tmp]);
+				// Wyświetlenie zawartości znajdującej się pod kafelkiem
+				if ((tmp+1)%5==0) tiles[tmp].setAttribute('style', `background-color: white; display: flex; align-items: center; justify-content: center; font-size: 24px;`);
+				else tiles[tmp].setAttribute('style', `background-color: white; display: flex; align-items: center; justify-content: center; margin-right: 25px; font-size: 24px;`);
+				
+				// Jeżeli tablica przechowująca odsłonięte kafelki jest pusta dodajemy kafelek
+				if (choosenTiles[0] === undefined) {
+					choosenTiles.push(tiles[tmp]);
+				} else {
+					// Wiemy, że tablica zawiera jeden element. Sprawdzamy czy nie nastąpiło podwójne kliknięcie w ten sam element. Jeżeli do tego nie doszło, dodajemy do tablicy odsłoniętych kafelków drugi element.
+					if (parseInt(choosenTiles[0].getAttribute('id')) != tmp) {
+						choosenTiles.push(tiles[tmp]);
+					}
+				}
 				if (choosenTiles.length == 2) {
 					// Po odsłonięciu dwóch kafelków zwiększamy liczbę porównań
 					counter++;
@@ -63,8 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	function processClick() {
 		var firstIdx = parseInt(choosenTiles[0].getAttribute('id'));
 		var secondIdx = parseInt(choosenTiles[1].getAttribute('id'));
-		// Spawdzamy czy na kafelkach są te same liczby
-		if (tilesNums[firstIdx] == tilesNums[secondIdx]) {
+		// Spawdzamy czy na kafelkach są te same liczby i czy nie jest to ten sam kafelek (porównanie identyfikatorów)
+		if (tilesNums[firstIdx] == tilesNums[secondIdx] && firstIdx != secondIdx) {
 			temp = tilesNums[firstIdx];
 			// Przeszukujemy całą tablicę, żeby 'wymazać' kafelki ze sparowaną liczbą
 			for (let j = 0; j < 20; j++) {
@@ -73,9 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
 					tilesNums[j] = 0;
 					tiles[j].innerHTML = '';
 					// Wymazanie
-					if ((j+1)%5==0) tiles[j].setAttribute('style', `background-color: transparent;`);
-					else tiles[j].setAttribute('style', `background-color: transparent;
-														 margin-right: 25px;`);
+					if ((j+1)%5==0) {
+						tiles[j].setAttribute('style', `background-color: transparent;`);
+					} else {
+						tiles[j].setAttribute('style', `background-color: transparent; margin-right: 25px;`);
+					}
+					// Usunięcie event listener'ów z elementu, dzięki temu kafelek nie zareaguje na kliknięcie
+					var clone = tiles[j].cloneNode(true);
+					tiles[j].parentNode.replaceChild(clone, tiles[j]);
 				}					
 			}
 		}
@@ -84,13 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (tilesNums[j] != 0) {
 				tiles[j].innerHTML = '';
 				if ((j+1)%5==0) tiles[j].setAttribute('style', `background-color: #bbf547;`);
-				else tiles[j].setAttribute('style', `background-color: #bbf547;
-													 margin-right: 25px;`);
+				else tiles[j].setAttribute('style', `background-color: #bbf547; margin-right: 25px;`);
 			}
 		}
 		// Wyczyszczenie tablicy przechowującej parę kafelków
 		choosenTiles = [];
-		// Sprawdzenie czy to jest koniec gry
+		// Sprawdzenie czy to jest koniec gry (koniec gry jest w momencie, gdy cała tablica jest wypełniona zerami)
 		for (let i = 0; i < 2*width; i++) {
 			if (tilesNums[i] != 0) {
 				isEnd = false;
@@ -98,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		if (isEnd) {
 			stopTimer();
+			// Przesłanie wyniku do bazy danych może się odbyć z tego miejsca lub ze stopTimer()
 		} else {
 			isEnd = true;
 		}
@@ -140,16 +152,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			numLayout.setAttribute('id', i);
 			// Zakrycie kafelka kolorem, if jest tylko dla wyśrodkowania kafelków
 			if ((i+1)%5==0) numLayout.setAttribute('style', `background-color: #bbf547;`);
-			else numLayout.setAttribute('style', `background-color: #bbf547;
-												  margin-right: 25px;`);
+			else numLayout.setAttribute('style', `background-color: #bbf547; margin-right: 25px;`);
 			// Ten event listener będzie się odbywał przed click, dlatego można tu dodać animację
 			numLayout.addEventListener('mousedown', function(e) {
 				// Tutaj można dodać animację obracania kafelka
 			});
 			// Reakcja div'ów na kliknięcie, w tym przypadku zmiana stylu wyświetlania diva
-			numLayout.addEventListener('click', function(e) {
-				showTile(e);
-			});
+			numLayout.addEventListener('click', showTile, false);
 			// Dodanie kafelków do głównego div'a board
 			grid.appendChild(numLayout);
 			// Przypisanie poszczególnego div'a do kolejnych elementów tablicy
@@ -166,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		stopTimer();
 		clock = 0;
 		time.innerHTML = 'Czas: 0:00';
+		isFirstClick = true;
 		counter = 0;
 		refreshComparisons();
 		tiles = [];
