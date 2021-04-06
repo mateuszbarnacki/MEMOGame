@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		if (isEnd) {
 			stopTimer();
-			// Przesłanie wyniku do bazy danych może się odbyć z tego miejsca lub ze stopTimer()
+			// Przesłanie wyniku do bazy danych musi się odbyć z tego miejsca, stopTimer() jest wywoływany również w playAgain()
 		} else {
 			isEnd = true;
 		}
